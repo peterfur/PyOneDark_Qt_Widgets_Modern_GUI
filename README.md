@@ -1,5 +1,5 @@
 # PyOneDark Qt Widgets Modern GUI - With PySide2 with aero snaping for windows 10(using nativeEvent)
-# This idea comes merging  Wander repository with this one: https://github.com/mustafaahci/FramelessWindow
+## This idea comes merging  Wander repository with this one: https://github.com/mustafaahci/FramelessWindow
 
 ![PyOneDark - Capa](https://user-images.githubusercontent.com/60605512/127739671-653eccb8-49da-4244-ae48-a8ae9b9b6fb2.png)
 

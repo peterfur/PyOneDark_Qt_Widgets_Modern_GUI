@@ -251,9 +251,9 @@ class MainWindow(QMainWindow):
             x -= self.frameGeometry().x()
             y -= self.frameGeometry().y()
             # Determine whether there are other controls(i.e. widgets etc.) at the mouse position.
-            #here you find the widgets that isnt part of your custom title-bar
+            #print(self.findChild(QWidget, "title_bar"))
             if self.childAt(x, y) is not None and self.childAt(x, y) is not self.findChild(QWidget, "title_bar"):
-                    # here you select parts of widgets that u are interested on managing as custom titlebar
+                    # passing
                 if self.ui.title_bar.childAt(x, y)==None or self.ui.title_bar.childAt(x, y).objectName()!="title_label":
                     if self.width() - self.BORDER_WIDTH > x > self.BORDER_WIDTH and y < self.height() - self.BORDER_WIDTH:
                         #print("pass")
