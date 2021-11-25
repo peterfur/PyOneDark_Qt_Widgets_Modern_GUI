@@ -99,6 +99,8 @@ class PyTitleBar(QWidget):
 
         # SETUP UI
         self.setup_ui()
+        self.setObjectName("title_bar")
+
 
         # ADD BG COLOR
         self.bg.setStyleSheet(f"background-color: {bg_color}; border-radius: {radius}px;")
@@ -110,7 +112,7 @@ class PyTitleBar(QWidget):
 
         # MOVE WINDOW / MAXIMIZE / RESTORE
         # ///////////////////////////////////////////////////////////////
-        def moveWindow(event):
+        '''def moveWindow(event):
             # IF MAXIMIZED CHANGE TO NORMAL
             if parent.isMaximized():
                 self.maximize_restore()
@@ -130,7 +132,7 @@ class PyTitleBar(QWidget):
             self.div_1.mouseMoveEvent = moveWindow
             self.title_label.mouseMoveEvent = moveWindow
             self.div_2.mouseMoveEvent = moveWindow
-            self.div_3.mouseMoveEvent = moveWindow
+            self.div_3.mouseMoveEvent = moveWindow'''
 
         # MAXIMIZE / RESTORE
         if is_custom_title_bar:
@@ -268,7 +270,8 @@ class PyTitleBar(QWidget):
         self.div_3 = PyDiv(self._div_color)
 
         # LEFT FRAME WITH MOVE APP
-        self.top_logo = QLabel()
+        self.top_logo = QLabel(self)
+        self.top_logo = QLabel(self)
         self.top_logo_layout = QVBoxLayout(self.top_logo)
         self.top_logo_layout.setContentsMargins(0,0,0,0)
         self.logo_svg = QSvgWidget()
@@ -276,7 +279,8 @@ class PyTitleBar(QWidget):
         self.top_logo_layout.addWidget(self.logo_svg, Qt.AlignCenter, Qt.AlignCenter)
 
         # TITLE LABEL
-        self.title_label = QLabel()
+        self.title_label = QLabel(self)
+        self.title_label.setObjectName("title_label")
         self.title_label.setAlignment(Qt.AlignVCenter)
         self.title_label.setStyleSheet(f'font: {self._title_size}pt "{self._font_family}"')
 

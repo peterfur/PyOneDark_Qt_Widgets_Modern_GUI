@@ -1,5 +1,5 @@
 # ///////////////////////////////////////////////////////////////
-#
+# IMPROVED BY: PEDRO FURELOS FABEIRO
 # BY: WANDERSON M.PIMENTA
 # PROJECT MADE WITH: Qt Designer and PySide6
 # V: 1.0.0
@@ -16,6 +16,19 @@
 
 # IMPORT PACKAGES AND MODULES
 # ///////////////////////////////////////////////////////////////
+import ctypes
+import win32api
+import win32con
+import win32gui
+from ctypes.wintypes import LONG
+
+import winxpgui
+from PySide2.QtWinExtras import QtWin
+from win32con import WM_NCCALCSIZE, GWL_STYLE, WM_NCHITTEST, WS_MAXIMIZEBOX, WS_THICKFRAME, \
+    WS_CAPTION, HTTOPLEFT, HTBOTTOMRIGHT, HTTOPRIGHT, HTBOTTOMLEFT, \
+    HTTOP, HTBOTTOM, HTLEFT, HTRIGHT, HTCAPTION, WS_POPUP, WS_SYSMENU, WS_MINIMIZEBOX
+from PySide2.QtCore import Qt
+
 from gui.uis.windows.main_window.functions_main_window import *
 import sys
 import os
@@ -45,9 +58,24 @@ os.environ["QT_FONT_DPI"] = "96"
 # MAIN WINDOW
 # ///////////////////////////////////////////////////////////////
 class MainWindow(QMainWindow):
+    BORDER_WIDTH=5
     def __init__(self):
         super().__init__()
+        self.setWindowFlags(Qt.WindowMinMaxButtonsHint | Qt.WindowSystemMenuHint | Qt.WindowCloseButtonHint | Qt.FramelessWindowHint )
+        self.hwnd = self.winId().__int__()
+        window_style = win32gui.GetWindowLong(self.hwnd, GWL_STYLE)
+        win32gui.SetWindowLong(self.hwnd, GWL_STYLE, window_style | WS_CAPTION | WS_POPUP
+                               | WS_THICKFRAME | WS_CAPTION | WS_SYSMENU
+                               | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | win32con.WS_EX_LAYERED)
 
+        if QtWin.isCompositionEnabled():
+            # Aero Shadow
+            print("enabled")
+            QtWin.extendFrameIntoClientArea(self, -1, -1, -1, -1)
+        else:
+            print("disabled")
+
+            QtWin.resetExtendedFrame(self)
         # SETUP MAIN WINDOw
         # Load widgets from "gui\uis\main_window\ui_main.py"
         # ///////////////////////////////////////////////////////////////
@@ -197,14 +225,80 @@ class MainWindow(QMainWindow):
 
     # RESIZE EVENT
     # ///////////////////////////////////////////////////////////////
-    def resizeEvent(self, event):
+    #I COMMENT THIS EVENTS TO IMPLEMENT NATIVE EVENTS
+
+    def changeEvent(self, event):
+        if event.type() == event.WindowStateChange:
+            if self.windowState() & Qt.WindowMaximized:
+                margin = abs(self.mapToGlobal(self.rect().topLeft()).y())
+                self.setContentsMargins(margin, margin, margin, margin)
+            else:
+                self.setContentsMargins(0, 0, 0, 0)
+
+        return super(MainWindow, self).changeEvent(event)
+
+    def nativeEvent(self, event, message):
+        return_value, result = super().nativeEvent(event, message)
+        # if you use Windows OS
+        if event == b'windows_generic_MSG':
+            msg = ctypes.wintypes.MSG.from_address(message.__int__())
+            # Get the coordinates when the mouse moves.
+            x = win32api.LOWORD(LONG(msg.lParam).value)
+            # converted an unsigned int to int (for dual monitor issue)
+            if x & 32768: x = x | -65536
+            y = win32api.HIWORD(LONG(msg.lParam).value)
+            if y & 32768: y = y | -65536
+            x -= self.frameGeometry().x()
+            y -= self.frameGeometry().y()
+            # Determine whether there are other controls(i.e. widgets etc.) at the mouse position.
+            #print(self.findChild(QWidget, "title_bar"))
+            if self.childAt(x, y) is not None and self.childAt(x, y) is not self.findChild(QWidget, "title_bar"):
+                    # passing
+                if self.ui.title_bar.childAt(x, y)==None or self.ui.title_bar.childAt(x, y).objectName()!="title_label":
+                    if self.width() - self.BORDER_WIDTH > x > self.BORDER_WIDTH and y < self.height() - self.BORDER_WIDTH:
+                        #print("pass")
+                        return return_value, result
+                    #else:
+                        #print("not pass")
+            if msg.message == WM_NCCALCSIZE:
+                # Remove system title
+                return True, 0
+
+            if msg.message == WM_NCHITTEST:
+                #print("chittest")
+                w, h = self.width(), self.height()
+                lx = x < self.BORDER_WIDTH
+                rx = x > w - self.BORDER_WIDTH
+                ty = y < self.BORDER_WIDTH
+                by = y > h - self.BORDER_WIDTH
+                if lx and ty:
+                    return True, HTTOPLEFT
+                if rx and by:
+                    return True, HTBOTTOMRIGHT
+                if rx and ty:
+                    return True, HTTOPRIGHT
+                if lx and by:
+                    return True, HTBOTTOMLEFT
+                if ty:
+                    return True, HTTOP
+                if by:
+                    return True, HTBOTTOM
+                if lx:
+                    return True, HTLEFT
+                if rx:
+                    return True, HTRIGHT
+                # Title
+                return True, HTCAPTION
+
+        return return_value, result
+    '''def resizeEvent(self, event):
         SetupMainWindow.resize_grips(self)
 
     # MOUSE CLICK EVENTS
     # ///////////////////////////////////////////////////////////////
     def mousePressEvent(self, event):
         # SET DRAG POS WINDOW
-        self.dragPos = event.globalPos()
+        self.dragPos = event.globalPos()'''
 
 
 # SETTINGS WHEN TO START
