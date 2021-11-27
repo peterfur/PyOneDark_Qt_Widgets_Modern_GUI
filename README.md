@@ -4,7 +4,7 @@
 ![](https://github.com/peterfur/PyOneDark_Qt_Widgets_Modern_GUI/blob/master/gif.gif)
 
 
-## Origial README
+## Original README
 ![](https://user-images.githubusercontent.com/60605512/127739671-653eccb8-49da-4244-ae48-a8ae9b9b6fb2.png)
 > ## :gift: **//// DONATE ////**
 > ## 🔗 Donate (Gumroad): https://gum.co/mHsRC
